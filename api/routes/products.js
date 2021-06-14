@@ -3,6 +3,8 @@ const router = express.Router();
 const Product = require("../../models/products");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const checkAuth = require("../middleware/check-auth");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads/");
@@ -14,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.get("/", (req, res, next) => {
+router.get("/", checkAuth, (req, res, next) => {
   Product.find()
     .then((doc) => {
       res.status(200).json(doc);
@@ -26,7 +28,7 @@ router.get("/", (req, res, next) => {
     });
 });
 
-router.post("/", upload.single("productImage"), (req, res, next) => {
+router.post("/", upload.single("productImage"), checkAuth, (req, res, next) => {
   // console.log(req.file);
   const product = new Product({
     _id: mongoose.Types.ObjectId(),
